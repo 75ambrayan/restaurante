@@ -1,0 +1,99 @@
+/* Colores de "La Jama" */
+:root {
+    --primary-blue: #0d6efd;
+    --success-green: #198754;
+    --bg-light: #f8fafc;
+    --text-dark: #1e293b;
+}
+
+/* Estructura de dos columnas dentro del main-content */
+.comanda-wrapper {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 150px);
+}
+
+/* Área de Productos (Izquierda) */
+.productos-seccion {
+    flex: 2;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Tarjetas de comida */
+.menu-item {
+    border: none;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    overflow: hidden;
+}
+
+.menu-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+.card-img-top {
+    height: 160px;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.menu-item:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+/* Área de Comanda (Derecha) */
+.carrito-sidebar {
+    flex: 1;
+    background: white;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    min-width: 350px;
+}
+
+.lista-items-scroll {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin: 15px 0;
+}
+
+/* Items dentro del carrito */
+.cart-item-card {
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--primary-blue);
+}
+
+/* Buscador Estilizado */
+.search-box {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.search-box input {
+    padding-left: 55px;
+    height: 55px;
+    border-radius: 30px;
+    border: 1px solid #e2e8f0;
+    font-size: 1.1rem;
+}
+
+.search-box input:focus {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+    border-color: var(--primary-blue);
+}

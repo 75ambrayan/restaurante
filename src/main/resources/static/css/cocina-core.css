@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+:root {
+    --lajama-dark: #1B3A2C;
+    --lajama-peach: #FCE8D5;
+    --lajama-brown: #933D2D;
+    --lajama-bg: #FFF7ED; /* Sincronizado con el crema cálido de la marca */
+    --font-serif: 'Vollkorn', serif;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body.cocina-body {
+    background-color: var(--lajama-bg);
+    font-family: var(--font-sans);
+}
+
+/* LA LAYOUT WRAPPER (Sincronizado) */
+.wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    align-items: stretch;
+    background-color: var(--lajama-bg);
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding-bottom: 50px;
+}
+
+/* --- DETECCIÓN Y CORRECCIÓN DEL SIDEBAR --- */
+#sidebar {
+    width: 280px; /* Sincronizado con var(--sidebar-width) global */
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+    /* Removido background-color forzado antiguo para que herede el verde esmeralda de la marca */
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Header: Más elegante y menos alto */
+.estacion-header {
+    background-color: var(--lajama-dark);
+    padding: 0.8rem 2rem;
+    border-bottom: 3px solid var(--lajama-brown);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='12' viewBox='0 0 100 12'%3E%3Cpath d='M0,5 C25,-2 75,12 100,5 L100,12 L0,12 Z' fill='%23142d22'/%3E%3C/svg%3E");
+    background-position: bottom;
+    background-repeat: repeat-x;
+}
+
+.estacion-header h2 {
+    font-family: var(--font-serif);
+    color: var(--lajama-peach);
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* El Badge de Pendientes: Más discreto */
+.status-badge {
+    background: rgba(252, 232, 213, 0.1);
+    color: var(--lajama-peach);
+    border: 1px solid rgba(252, 232, 213, 0.3);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Tarjetas: El concepto "Ticket" */
+.pedidos-grid {
+    display: grid;
+    gap: 2rem;
+    padding: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.card-pedido {
+    background: #FFFFFF;
+    border-radius: 12px; /* Un poco más curvo siguiendo la línea de La Jama */
+    border: 1px solid var(--lajama-peach);
+    box-shadow: 0 10px 25px rgba(27, 58, 44, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.2rem 1.5rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background: transparent;
+}
+
+.badge-id {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    color: var(--lajama-dark);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.timer-container {
+    font-family: var(--font-serif);
+    color: var(--lajama-brown);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.card-body { padding: 0.5rem 1.5rem 1.5rem; }
+
+.card-body h5 {
+    font-family: var(--font-serif);
+    color: var(--lajama-dark);
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.item-plato {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dotted var(--lajama-peach); /* Modificado a tono suave de la marca */
+}
+
+.item-cantidad {
+    font-weight: 700;
+    color: var(--lajama-brown);
+}
+
+.item-nombre {
+    flex-grow: 1;
+    margin-left: 15px;
+    font-weight: 500;
+    color: #444;
+}
+
+/* Botones: Integrados al ticket */
+.card-footer {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.footer-actions { display: flex; }
+
+.btn-printer {
+    padding: 15px;
+    color: #ccc;
+    background: #fdfdfd;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    transition: 0.3s;
+}
+
+.btn-printer:hover { color: var(--lajama-brown); }
+
+.btn-despachar {
+    flex-grow: 1;
+    border: none;
+    background: var(--lajama-dark);
+    color: var(--lajama-peach);
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    padding: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-despachar:hover {
+    background: var(--lajama-brown);
+    transform: translateY(0);
+}

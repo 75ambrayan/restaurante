@@ -1,0 +1,64 @@
+/* Contenedor principal de las mesas */
+.grid-mesas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Estilo base de cada mesa */
+.mesa-box {
+    height: 110px;
+    border-radius: 15px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 3px solid transparent;
+}
+
+/* Estado: DISPONIBLE (Verde) */
+.disponible {
+    background-color: #2ecc71;
+    color: white;
+}
+.disponible:hover {
+    background-color: #27ae60;
+    transform: scale(1.05);
+}
+
+/* Estado: OCUPADA (Rojo) */
+.ocupada {
+    background-color: #e74c3c;
+    color: white;
+    animation: pulse 2s infinite;
+}
+.ocupada:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+/* ESTADO ESPECIAL: COMIDA LISTA (Amarillo - Notificado por WebSocket) */
+.lista-para-recoger {
+    background-color: #f1c40f !important;
+    color: #000 !important;
+    animation: blink-warning 1s infinite !important;
+    border: 3px solid #000 !important;
+}
+
+/* Animación de pulso para mesas ocupadas */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+/* Animación de parpadeo para pedidos listos */
+@keyframes blink-warning {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
