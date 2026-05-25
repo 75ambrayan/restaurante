@@ -27,8 +27,10 @@ public class MesaController {
     public String verPlanoMesas(Model model) {
         model.addAttribute("mesas", mesaRepository.findAll());
 
+        // CORRECCIÓN: Ahora enviamos a la vista TODOS los pedidos que estén activos en el salón
+        // (En cocina, preparados, asignados), excepto los ya cobrados o cancelados.
         List<Pedido> pedidosActivos = pedidoRepository.findAll().stream()
-                .filter(p -> p.getEstado() == EstadoPedido.PENDIENTE || p.getEstado() == EstadoPedido.ENTREGADO)
+                .filter(p -> p.getEstado() != EstadoPedido.PAGADO && p.getEstado() != EstadoPedido.CANCELADO)
                 .toList();
 
         model.addAttribute("pedidos", pedidosActivos);
@@ -62,7 +64,7 @@ public class MesaController {
         List<Pedido> pedidosActivos = pedidoRepository.findByNumeroMesa(m.getNumero())
                 .stream()
                 .filter(p -> p.getEstado() != EstadoPedido.PAGADO
-                          && p.getEstado() != EstadoPedido.CANCELADO)
+                        && p.getEstado() != EstadoPedido.CANCELADO)
                 .collect(java.util.stream.Collectors.toList());
 
         for (Pedido p : pedidosActivos) {
@@ -82,7 +84,7 @@ public class MesaController {
         List<Pedido> pedidos = pedidoRepository.findByNumeroMesa(numeroMesa)
                 .stream()
                 .filter(p -> p.getEstado() != EstadoPedido.PAGADO
-                          && p.getEstado() != EstadoPedido.CANCELADO)
+                        && p.getEstado() != EstadoPedido.CANCELADO)
                 .collect(java.util.stream.Collectors.toList());
 
         if (pedidos.isEmpty()) {
@@ -98,5 +100,4 @@ public class MesaController {
 
         return ResponseEntity.ok(respuesta);
     }
-
 }

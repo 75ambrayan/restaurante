@@ -49,66 +49,53 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// --- GESTIÓN DE FLUJO HISTÓRICO Y CICLO DE CONTROL DE MESAS ---
 function prepararGestion(elemento) {
     const id = elemento.getAttribute('data-id');
-    const estado = elemento.getAttribute('data-estado');
     currentMesaNumero = elemento.getAttribute('data-numero');
     const pedidoEstado = elemento.getAttribute('data-pedido-estado');
 
-    // Capturamos el ID del pedido persistente de la BD para la adición
     currentPedidoId = elemento.getAttribute('data-pedido-id');
     currentMesaId = id;
 
-    if (estado === 'DISPONIBLE') {
+    // REGLA DE ORO: Si no hay pedido activo en la BD, la mesa está limpia (Verde) -> Vamos a la carta
+    if (pedidoEstado === 'NINGUNO' || !currentPedidoId) {
         window.location.href = '/admin/mesero/nuevo?mesaId=' + id;
-    } else {
-        document.getElementById('lblNumero').innerText = currentMesaNumero;
+        return;
+    }
 
-        const btnEntregar = document.getElementById('btnEntregarPlato');
-        const btnDesocupar = document.getElementById('btnDesocupar');
-        const alertaConsumo = document.getElementById('alertaConsumo');
-        const txtConfirmacion = document.getElementById('textoConfirmacion');
-        const numMesaTexto = document.getElementById('numMesaTexto');
-        const tarjetaMesa = elemento;
+    // SI HAY UN PEDIDO EN CURSO (ROJO, AMARILLO O BLANCO): Abrimos el modal de control
+    document.getElementById('lblNumero').innerText = currentMesaNumero;
 
-        // Reset inicial
-        btnEntregar.classList.add('d-none');
-        txtConfirmacion.classList.add('d-none');
-        alertaConsumo.classList.add('d-none');
+    const btnEntregar = document.getElementById('btnEntregarPlato');
+    const btnDesocupar = document.getElementById('btnDesocupar');
+    const txtConfirmacion = document.getElementById('textoConfirmacion');
+    const numMesaTexto = document.getElementById('numMesaTexto');
+    const tarjetaMesa = elemento;
+
+    // Reset por defecto para el estado ROJO (En cocina, botones de acción bloqueados)
+    btnEntregar.classList.add('d-none');
+    txtConfirmacion.classList.add('d-none');
+    btnDesocupar.classList.add('disabled');
+
+    // MESA AMARILLA: Validamos si la cocina ya terminó el lote
+    if (tarjetaMesa.classList.contains('lista-para-recoger')) {
+        numMesaTexto.innerText = currentMesaNumero;
+        txtConfirmacion.classList.remove('d-none');
+        btnEntregar.classList.remove('d-none');
+    }
+    // MESA BLANCA: Validamos si el mesero ya marcó "Todo Conforme" (Pedido cambia a ASIGNADO)
+    else if (pedidoEstado === 'ASIGNADO') {
         btnDesocupar.classList.remove('disabled');
-
-        // Evaluación dinámica de estados en Salón
-        if (tarjetaMesa.classList.contains('lista-para-recoger')) {
-            numMesaTexto.innerText = currentMesaNumero;
-            txtConfirmacion.classList.remove('d-none');
-            btnEntregar.classList.remove('d-none');
-            btnDesocupar.classList.add('disabled');
-        } else if (pedidoEstado === 'ENTREGADO') {
-            alertaConsumo.classList.remove('d-none');
-        } else if (pedidoEstado === 'ASIGNADO' || pedidoEstado === 'PREPARADO') {
-            // Pedido local listo — permitir cobrar y liberar mesa
-            alertaConsumo.classList.remove('d-none');
-            btnDesocupar.classList.remove('disabled');
-        } else {
-            btnDesocupar.classList.add('disabled'); // En preparación — aún no listo
-        }
-
-        if (mesaModal) mesaModal.show();
     }
+
+    if (mesaModal) mesaModal.show();
 }
 
+// --- REDIRECCIONES Y ACCIONES DEL MODAL ---
 function abrirGestion(id, estado, numero) {
-    currentMesaId = id;
-    if (estado === 'DISPONIBLE') {
-        window.location.href = '/admin/mesero/nuevo?mesaId=' + id;
-    } else {
-        document.getElementById('lblNumero').innerText = numero;
-        if (mesaModal) mesaModal.show();
-    }
+    window.location.href = '/admin/mesero/nuevo?mesaId=' + id;
 }
 
-// NUEVA FUNCIÓN CONSOLIDADA: Envía la mesa y arrastra la orden activa para acumular
 function irAMenu() {
     if (currentMesaId) {
         let url = '/admin/mesero/nuevo?mesaId=' + currentMesaId;
@@ -119,29 +106,30 @@ function irAMenu() {
     }
 }
 
-// --- ENTREGA Y FACTURACIÓN (PRECUENTA) ---
+// Llama al endpoint "marcar-en-mesa" que cambia el estado a ASIGNADO (Blanco)
 async function marcarComoEntregado() {
     if (!currentMesaNumero) {
         alert("No se ha seleccionado ninguna mesa.");
         return;
     }
 
-    if (confirm(`¿Confirmas que ya se le entregó el pedido a la mesa #${currentMesaNumero}?`)) {
+    if (confirm(`¿Confirmas que la orden está completa y todo conforme en la mesa #${currentMesaNumero}?`)) {
         try {
-            const res = await fetch('/admin/mesas/entregar-plato/' + currentMesaNumero, { method: 'POST' });
+            const res = await fetch('/admin/mesero/marcar-en-mesa/' + currentPedidoId, { method: 'POST' });
             if (res.ok) {
                 if (mesaModal) mesaModal.hide();
                 window.location.reload();
             } else {
-                alert("Error al registrar la entrega del plato en el servidor.");
+                alert("Error al registrar la entrega en el servidor.");
             }
         } catch (error) {
-            console.error("Error en la petición de entrega:", error);
+            console.error("Error en la petición:", error);
             alert("Sin conexión con el servidor.");
         }
     }
 }
 
+// Inicia el proceso de pago final
 async function validarDesocupar() {
     let mesaNumero = document.getElementById('lblNumero').innerText;
     let tarjetaMesa = document.querySelector(`[data-numero="${mesaNumero}"]`);
@@ -149,7 +137,7 @@ async function validarDesocupar() {
     const pedidoEstadoActual = tarjetaMesa.getAttribute('data-pedido-estado');
     const estadosNoCobrar = ['EN_COCINA', 'PENDIENTE'];
     if (estadosNoCobrar.includes(pedidoEstadoActual)) {
-        alert(`¡No puedes desocupar la Mesa #${mesaNumero}! Los cocineros aún no terminan los platos.`);
+        alert(`¡No puedes cobrar la Mesa #${mesaNumero}! Aún hay productos en cocina.`);
         return;
     }
 
@@ -188,10 +176,11 @@ async function validarDesocupar() {
     }
 }
 
+// Ejecuta el cierre de comanda y pone la mesa en Verde nuevamente
 async function confirmarPagoFinal() {
-    if (confirm("¿Confirmas que recibiste el pago completo y deseas liberar la mesa?")) {
+    if (confirm("¿Confirmas el pago completo y deseas desocupar la mesa?")) {
         try {
-            const res = await fetch('/admin/mesas/liberar/' + currentMesaId, { method: 'POST' });
+            const res = await fetch(`/admin/mesero/finalizar-atencion/${currentPedidoId}?mesaId=${currentMesaId}`, { method: 'POST' });
             if (res.ok) {
                 if (precuentaModal) precuentaModal.hide();
                 window.location.reload();

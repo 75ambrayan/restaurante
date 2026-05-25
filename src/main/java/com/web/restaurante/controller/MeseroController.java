@@ -230,4 +230,19 @@ public class MeseroController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @PostMapping("/preparar-cuenta/{id}")
+    @ResponseBody
+    public ResponseEntity<String> prepararCuenta(@PathVariable Long id) {
+        try {
+            Pedido pedido = pedidoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+            pedido.setEstado(EstadoPedido.PREPARADO);
+
+            pedidoRepository.save(pedido);
+            return ResponseEntity.ok("OK");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 }

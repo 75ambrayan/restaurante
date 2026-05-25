@@ -62,3 +62,28 @@
     50% { opacity: 0.6; }
     100% { opacity: 1; }
 }
+
+/* VERDE: Mesa libre */
+.disponible {
+    background-color: #2ecc71 !important;
+    color: white !important;
+}
+
+/* ROJO: En cocina / Esperando platos */
+.ocupada {
+    background-color: #e74c3c !important;
+    color: white !important;
+}
+
+/* AMARILLO: Cocina terminó (Falta confirmar) */
+.lista-para-recoger {
+    background-color: #f1c40f !important;
+    color: black !important;
+}
+
+/* BLANCO: Todo conforme (Listo para pagar) */
+.lista-para-pagar {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 3px solid #7f8c8d !important;
+}

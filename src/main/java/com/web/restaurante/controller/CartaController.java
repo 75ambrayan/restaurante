@@ -27,11 +27,6 @@ public class CartaController {
         return "entregas/carta";
     }
 
-    /**
-     * Recibe el pedido del cliente desde la carta digital.
-     * Se llama justo antes de abrir WhatsApp, registrando el pedido
-     * en el sistema como PENDIENTE para que llegue a cocina.
-     */
     @PostMapping("/carta/pedido")
     public ResponseEntity<?> recibirPedidoCarta(@RequestBody Pedido pedido) {
         pedidoService.guardarPedido(pedido);

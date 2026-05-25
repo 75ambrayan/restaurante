@@ -24,8 +24,9 @@
                 </div>
                 <div class="d-flex gap-3 me-3">
                     <span class="badge bg-success">Libre</span>
-                    <span class="badge bg-danger">Ocupada</span>
-                    <span class="badge bg-warning text-dark">¡Comida Lista!</span>
+                    <span class="badge bg-danger">En Cocina</span>
+                    <span class="badge bg-warning text-dark">Para recoger</span>
+                    <span class="badge bg-light text-dark border border-secondary">Listo para Pagar</span>
                 </div>
             </div>
         </header>
@@ -39,20 +40,19 @@
                   pedidoMesa=${pedidosFiltrados != null && !#lists.isEmpty(pedidosFiltrados) ? pedidosFiltrados[#lists.size(pedidosFiltrados) - 1] : null}"
 
                              th:class="'mesa-box ' +
-                   (${m.estado == 'DISPONIBLE' ? 'disponible' :
-                     (pedidoMesa != null && pedidoMesa.estado.name() == 'ENTREGADO' ? 'en-consumo' :
-                     (pedidoMesa != null && pedidoMesa.isListoParaServir() ? 'lista-para-recoger' : 'ocupada'))})"
+              (${pedidoMesa == null} ? 'disponible' :
+                (${pedidoMesa.estado.name() == 'ASIGNADO'} ? 'lista-para-pagar' :
+                (${pedidoMesa.isListoParaServir()} ? 'lista-para-recoger' : 'ocupada')))"
 
                              th:data-id="${m.id}"
-                             th:data-estado="${m.estado}"
                              th:data-numero="${m.numero}"
                              th:data-pedido-id="${pedidoMesa != null ? pedidoMesa.id : ''}"
                              th:data-pedido-estado="${pedidoMesa != null ? pedidoMesa.estado.name() : 'NINGUNO'}"
                              th:id="'mesa-card-' + ${m.id}"
                              onclick="prepararGestion(this)">
 
-                            <i th:class="${pedidoMesa != null && pedidoMesa.estado.name() == 'ENTREGADO'} ? 'bi bi-person-check-fill' :
-                     (${pedidoMesa != null && pedidoMesa.isListoParaServir()} ? 'bi bi-bell-fill' : 'bi bi-cup-hot-fill')"
+                            <i th:class="${pedidoMesa != null && pedidoMesa.estado.name() == 'ASIGNADO'} ? 'bi bi-person-check-fill' :
+                         (${pedidoMesa != null && pedidoMesa.isListoParaServir()} ? 'bi bi-bell-fill' : 'bi bi-cup-hot-fill')"
                                style="font-size: 1.8rem;"></i>
 
                             <span class="fs-5 fw-bold">#[[${m.numero}]]</span>
@@ -72,24 +72,21 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <div id="alertaConsumo" class="alert alert-secondary d-none mb-3" role="alert">
-                    <i class="bi bi-eye-fill me-2"></i> Atento a cuando acabe la persona para desocupar la mesa.
-                </div>
 
                 <p id="textoConfirmacion" class="fw-bold text-dark d-none mb-3">
-                    ¿Se le entregó su pedido al cliente de la mesa #<span id="numMesaTexto"></span>?
+                    ¿La orden está lista en barra para la mesa #<span id="numMesaTexto"></span>?
                 </p>
 
                 <button id="btnAgregarPedido" class="btn btn-primary w-100 mb-3" onclick="irAMenu()">
-                    <i class="bi bi-plus-lg me-2"></i>Agregar Producto Adicional
+                    <i class="bi bi-plus-lg me-2"></i>Añadir Producto
                 </button>
 
                 <button id="btnEntregarPlato" class="btn btn-warning w-100 mb-3 text-dark d-none" onclick="marcarComoEntregado()">
-                    <i class="bi bi-check-lg me-2"></i>Sí, Entregado
+                    <i class="bi bi-check-circle me-2"></i>Todo Conforme
                 </button>
 
                 <button id="btnDesocupar" class="btn btn-outline-danger w-100" onclick="validarDesocupar()">
-                    <i class="bi bi-cash-coin me-2"></i>¿Se confirmó el pago? Desocupar Mesa
+                    <i class="bi bi-cash-coin me-2"></i>Confirmar Pago
                 </button>
             </div>
         </div>
